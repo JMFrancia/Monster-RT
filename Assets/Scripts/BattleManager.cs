@@ -10,6 +10,7 @@ public class BattleManager : MonoBehaviour
     TerrainGridSystem tgs;
 
     static int turnIndex = 0;
+    static int round = 1;
 
     private void Start()
     {
@@ -22,11 +23,17 @@ public class BattleManager : MonoBehaviour
             Debug.Log("Combatant " + combatant.name + " at cell " + cell.row + ", " + cell.column);
         }
 
+        Debug.Log("Round 1");
+
         BeginTurn();
     }
 
     public static void EndTurn() {
         turnIndex = (turnIndex + 1) % combatants.Length;
+        if(turnIndex == 0) {
+            round++;
+            Debug.Log("Round " + round);
+        }
         BeginTurn();
     }
 

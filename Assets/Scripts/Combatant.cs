@@ -2,10 +2,31 @@
 using System.Collections.Generic;
 using System.Collections;
 using TGS;
+using Sirenix.OdinInspector;
 
 public class Combatant : MonoBehaviour
 {
+    [SerializeField] Color moveRangeColor = Color.cyan;
     [SerializeField] float movementTime = .5f;
+    [SerializeField] float speed = 1f;
+    [SerializeField] int maxEnergy = 3;
+    [SerializeField] int maxHealth = 8;
+    [SerializeField] int stamina = 2;
+
+    Color energyBarColor = Color.green;
+    Color healthbarColor = Color.red;
+
+    Color[] originalCellColors;
+
+    [ProgressBar(0, 0, MaxMember = "maxEnergy", Segmented = true, ColorMember = "energyBarColor")]
+    [SerializeField]
+    [ReadOnly]
+    int energy;
+
+    [ProgressBar(0,0, MaxMember = "maxHealth", Segmented = true, ColorMember = "healthbarColor")]
+    [SerializeField]
+    [ReadOnly]
+    int health;
 
     enum State
     {
@@ -21,9 +42,15 @@ public class Combatant : MonoBehaviour
     int currentMove;
     bool moving = false;
 
+    List<int> moveRange;
+
+    int currentCellIndex;
+
     private void Awake()
     {
         tgs = TerrainGridSystem.instance;
+        health = maxHealth;
+        energy = maxEnergy;
     }
 
     private void Update()
@@ -67,7 +94,7 @@ public class Combatant : MonoBehaviour
             if (t_cell != -1)
             {
                 int startCell = tgs.CellGetIndex(tgs.CellGetAtPosition(transform.position, true));
-                List<int> moveList = tgs.FindPath(startCell, t_cell);
+                List<int> moveList = tgs.FindPath(startCell, t_cell, maxSteps: Mathf.RoundToInt(energy * speed));
                 if (moveList == null)
                     return;
                 tgs.CellFadeOut(moveList, Color.green, 5f);
@@ -82,18 +109,39 @@ public class Combatant : MonoBehaviour
         Debug.Log(gameObject.name + " beginning turn!");
         turn = true;
         state = State.IDLE;
-        //StartCoroutine(EndTurnInSeconds(1));
+        ShowMoveRange(true);
     }
 
-    IEnumerator EndTurnInSeconds(float seconds)
-    {
-        yield return new WaitForSeconds(seconds);
-        EndTurn();
+    public void ShowMoveRange(bool show) { 
+        if (show) {
+            Debug.Log("Showing move range");
+            tgs.highlightEffect = HIGHLIGHT_EFFECT.DualColors;
+            currentCellIndex = tgs.CellGetAtPosition(transform.position, true).index;
+            Debug.Log("Cell index: " + currentCellIndex);
+            Debug.Log("Energy: " + energy);
+            Debug.Log("Speed: " + speed);
+            moveRange = tgs.CellGetNeighboursWithinRange(currentCellIndex, 0, Mathf.RoundToInt(energy * speed));
+            Debug.Log("Move range size: " + moveRange.Count);
+            originalCellColors = new Color[moveRange.Count];
+            for (int n = 0; n < moveRange.Count; n++)
+            {
+                originalCellColors[n] = tgs.CellGetColor(moveRange[n]);
+                tgs.CellSetColor(moveRange[n], moveRangeColor);
+//                tgs.CellSetTerritory(moveRange[n], 1);               
+            }
+        } else {
+            for (int n = 0; n < moveRange.Count; n++)
+            {
+                tgs.CellSetColor(moveRange[n], originalCellColors[n]);
+//                tgs.CellSetTerritory(moveRange[n], 0);
+            }
+        }
     }
 
     public void EndTurn()
     {
         turn = false;
+        ShowMoveRange(false);
         BattleManager.EndTurn();
     }
 }

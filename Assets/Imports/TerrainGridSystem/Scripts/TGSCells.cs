@@ -648,8 +648,9 @@ namespace TGS {
         /// <summary>
         /// Temporarily colors a cell for "duration" in seconds.
         /// </summary>
-        public void CellColorTemp(int cellIndex, Color color, float duration = 2f) {
-            CellAnimate(FADER_STYLE.ColorTemp, cellIndex, Misc.ColorNull, color, duration, 1);
+        public void CellColorTemp(int cellIndex, Color color, float duration = 2f, int repetitions = 1) {
+            Color originalColor = CellGetColor(cellIndex);
+            CellAnimate(FADER_STYLE.ColorTemp, cellIndex, originalColor, color, duration, repetitions);
         }
 
         /// <summary>
@@ -657,7 +658,7 @@ namespace TGS {
         /// </summary>
         public void CellColorTemp(Cell cell, Color color, float duration = 2f, int repetitions = 1) {
             int cellIndex = CellGetIndex(cell);
-            CellAnimate(FADER_STYLE.ColorTemp, cellIndex, Misc.ColorNull, color, duration, repetitions);
+            CellColorTemp(cellIndex, color, duration, repetitions);
         }
 
         /// <summary>
@@ -668,7 +669,7 @@ namespace TGS {
                 return;
             int cellCount = cellIndices.Count;
             for (int k = 0; k < cellCount; k++) {
-                CellAnimate(FADER_STYLE.ColorTemp, cellIndices[k], Misc.ColorNull, color, duration, repetitions);
+                CellColorTemp(cellIndices[k], color, duration, repetitions);
             }
         }
 

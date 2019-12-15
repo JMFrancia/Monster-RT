@@ -28,6 +28,10 @@ public class BattleManager : MonoBehaviour
         BeginTurn();
     }
 
+    public void EndCurrentTurn() {
+        combatants[turnIndex].EndTurn();
+    }
+
     public static void EndTurn() {
         turnIndex = (turnIndex + 1) % combatants.Length;
         if(turnIndex == 0) {

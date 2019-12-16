@@ -135,6 +135,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Combatant
       objectReference: {fileID: 0}
+    - target: {fileID: 1000013767804016, guid: c334a7c41936e764391ae93ab0e1981d, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4000011904546786, guid: c334a7c41936e764391ae93ab0e1981d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 21.26
@@ -222,6 +226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c97b07d66c6e47b6a2732e46c9b371a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showDebugSpheres: 0
 --- !u!4 &253865440
 Transform:
   m_ObjectHideFlags: 0
@@ -250,6 +255,10 @@ PrefabInstance:
     - target: {fileID: 1000014069041812, guid: f3e92f0e6c7c8724b98eded63b438981, type: 3}
       propertyPath: m_TagString
       value: Combatant
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000014069041812, guid: f3e92f0e6c7c8724b98eded63b438981, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4000014191901042, guid: f3e92f0e6c7c8724b98eded63b438981, type: 3}
       propertyPath: m_LocalPosition.x
@@ -713,13 +722,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveRangeColor: {r: 0, g: 1, b: 1, a: 1}
+  blockedMoveRangeColor: {r: 1, g: 0, b: 0, a: 1}
   movementTime: 0.5
-  speed: 3
+  speed: 5
   maxEnergy: 5
   maxHealth: 8
   stamina: 2
   energy: 0
   health: 5
+--- !u!136 &1594226423
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1594226421}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.015431003
+  m_Height: 0.033656944
+  m_Direction: 1
+  m_Center: {x: -0.0000000018694621, y: 0.01153876, z: 0.0016601784}
 --- !u!1 &1603684985
 GameObject:
   m_ObjectHideFlags: 0
@@ -1190,10 +1214,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveRangeColor: {r: 0, g: 1, b: 1, a: 1}
+  blockedMoveRangeColor: {r: 1, g: 0, b: 0, a: 1}
   movementTime: 0.5
-  speed: 3
+  speed: 5
   maxEnergy: 5
   maxHealth: 8
   stamina: 2
   energy: 0
   health: 4
+--- !u!136 &1877761545
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877761543}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.015431003
+  m_Height: 0.033656944
+  m_Direction: 1
+  m_Center: {x: -0.0000000018694621, y: 0.01153876, z: 0.0016601784}

@@ -4,9 +4,10 @@ using System.Collections;
 using TGS;
 using Sirenix.OdinInspector;
 
-public class Combatant : MonoBehaviour
+public class Combatant : BaseBattlefieldObject
 {
     [SerializeField] Color moveRangeColor = Color.cyan;
+    [SerializeField] Color blockedMoveRangeColor = Color.red;
     [SerializeField] float movementTime = .5f;
     [SerializeField] int speed = 1; //Speed as max move Dist for now
     [SerializeField] int maxEnergy = 3;
@@ -49,6 +50,8 @@ public class Combatant : MonoBehaviour
 
     private void Awake()
     {
+        movable = true;
+        destructable = true;
         tgs = TerrainGridSystem.instance;
         health = maxHealth;
         energy = maxEnergy;
@@ -93,15 +96,15 @@ public class Combatant : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             int t_cell = tgs.cellHighlightedIndex;
-            tgs.CellFadeOut(t_cell, Color.red, 50);
-            if (t_cell != -1)
+            //tgs.CellFadeOut(t_cell, Color.red, 50);
+            if (t_cell != -1 && BattleManager.GetBattlefieldObjectAtCell(tgs.cells[t_cell]) == null)
             {
                 int startCell = tgs.CellGetIndex(tgs.CellGetAtPosition(transform.position, true));
                 List<int> moveList = tgs.FindPath(startCell, t_cell, maxSteps: GetMoveRange());
                 if (moveList == null)
                     return;
                 energy -= moveList.Count;
-                tgs.CellFadeOut(moveList, Color.green, 5f);
+                //tgs.CellFadeOut(moveList, Color.green, 5f);
                 moveQueue = new Queue<int>(moveList);
                 state = State.MOVING;
                 ShowMoveRange(false);
@@ -124,28 +127,23 @@ public class Combatant : MonoBehaviour
 
     }
 
-    public void ShowMoveRange(bool show) { 
+    public void ShowMoveRange(bool show) {
+        BattleManager.ClearDebugSpheres();
         if (show) {
-//            Debug.Log("Showing move range");
-            tgs.highlightEffect = HIGHLIGHT_EFFECT.DualColors;
+            //tgs.highlightEffect = HIGHLIGHT_EFFECT.DualColors;
             currentCellIndex = tgs.CellGetAtPosition(transform.position, true).index;
-            //Debug.Log("Cell index: " + currentCellIndex);
-            //Debug.Log("Energy: " + energy);
-            //Debug.Log("Speed: " + speed);
             moveRange = tgs.CellGetNeighboursWithinRange(currentCellIndex, 0, GetMoveRange());
-//            Debug.Log("Move range size: " + moveRange.Count);
             originalCellColors = new Color[moveRange.Count];
             for (int n = 0; n < moveRange.Count; n++)
             {
                 originalCellColors[n] = tgs.CellGetColor(moveRange[n]);
-                tgs.CellSetColor(moveRange[n], moveRangeColor);
-//                tgs.CellSetTerritory(moveRange[n], 1);               
+                Color setColor = BattleManager.GetBattlefieldObjectAtCell(tgs.cells[moveRange[n]]) == null ? moveRangeColor : blockedMoveRangeColor;
+                tgs.CellSetColor(moveRange[n], setColor);
             }
         } else {
             for (int n = 0; n < moveRange.Count; n++)
             {
                 tgs.CellSetColor(moveRange[n], originalCellColors[n]);
-//                tgs.CellSetTerritory(moveRange[n], 0);
             }
         }
     }

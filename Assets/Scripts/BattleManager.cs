@@ -11,11 +11,13 @@ public class BattleManager : MonoBehaviour
     [SerializeField] bool showDebugSpheres = false;
     [SerializeField] Button endTurnButton;
 
-    static Combatant[] combatants;
-    static TerrainGridSystem tgs;
+    public static BattleManager instance;
 
-    static int turnIndex = 0;
-    static int round = 1;
+    Combatant[] combatants;
+    TerrainGridSystem tgs;
+
+    int turnIndex = 0;
+    int round = 1;
 
     struct DebugSphere {
         public float radius;
@@ -29,10 +31,15 @@ public class BattleManager : MonoBehaviour
             this.color = color;
         }
     }
-    static List<DebugSphere> debugSpheres = new List<DebugSphere>();
+    List<DebugSphere> debugSpheres = new List<DebugSphere>();
 
-    private void Awake()
+    void Awake()
     {
+        if (instance != null)
+            Destroy(this);
+        else
+            instance = this;
+
         EditorApplication.playModeStateChanged -= OnPlayModeStateChange;
         EditorApplication.playModeStateChanged += OnPlayModeStateChange;
     }
@@ -53,11 +60,15 @@ public class BattleManager : MonoBehaviour
         BeginTurn();
     }
 
+    public void EnableEndTurnButton(bool setting) {
+        endTurnButton.interactable = setting;
+    }
+
     public void EndCurrentTurn() {
         combatants[turnIndex].EndTurn();
     }
 
-    public static void EndTurn() {
+    public void EndTurn() {
         turnIndex = (turnIndex + 1) % combatants.Length;
         if(turnIndex == 0) {
             round++;
@@ -66,7 +77,7 @@ public class BattleManager : MonoBehaviour
         BeginTurn();
     }
 
-    public static BaseBattlefieldObject GetBattlefieldObjectAtCell(Cell cell) {
+    public BaseBattlefieldObject GetBattlefieldObjectAtCell(Cell cell) {
         float radius = tgs.cellSize.y * .4f;
         Vector3 spherePos = tgs.CellGetPosition(cell) + new Vector3(0f, 1f, 0f) * radius;
         Collider[] colliders = Physics.OverlapSphere(spherePos, radius, LayerMask.GetMask(Globals.LayerNames.BATTLEFIELD_OBJECT));
@@ -86,15 +97,15 @@ public class BattleManager : MonoBehaviour
         return bfObjs[0];
     }
 
-    static void BeginTurn() {
+    void BeginTurn() {
         combatants[turnIndex].BeginTurn();
     }
 
-    public static void AddDebugSphere(Vector3 position, float radius, Color color) {
+    public void AddDebugSphere(Vector3 position, float radius, Color color) {
         debugSpheres.Add(new DebugSphere(position, radius, color));
     }
 
-    public static void ClearDebugSpheres() {
+    public void ClearDebugSpheres() {
         debugSpheres.Clear();
     }
 

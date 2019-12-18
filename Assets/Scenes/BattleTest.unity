@@ -232,6 +232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showDebugSpheres: 1
+  endTurnButton: {fileID: 1304232946}
 --- !u!4 &253865440
 Transform:
   m_ObjectHideFlags: 0

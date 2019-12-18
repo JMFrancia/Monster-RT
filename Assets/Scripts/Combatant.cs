@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Collections;
 using TGS;
 using Sirenix.OdinInspector;
+using Animancer;
 
 public class Combatant : BaseBattlefieldObject
 {
+    [SerializeField] AnimationClip attackAnimation;
     [SerializeField] Color moveRangeColor = Color.cyan;
     [SerializeField] Color blockedMoveRangeColor = Color.red;
     [SerializeField] float movementTime = .5f;
@@ -35,24 +37,35 @@ public class Combatant : BaseBattlefieldObject
         MOVING
     }
 
-    bool turn = false;
+    BattleManager battleManager;
     TerrainGridSystem tgs;
-    State state = State.IDLE;
     Animator animator;
-    Queue<int> moveQueue;
+    AnimancerComponent animancer;
+
+    bool turn = false;
     bool inTransit = false;
+
+    State state = State.IDLE;
+
+    Queue<int> moveQueue;
+
     Color[] originalCellColors;
+
     List<int> moveRange;
+
     int currentCellIndex;
     int currentMove;
     int totalMoves = 0;
 
     private void Awake()
     {
+        tgs = TerrainGridSystem.instance;
+        battleManager = BattleManager.instance;
+        animator = GetComponent<Animator>();
+        animancer = GetComponent<AnimancerComponent>();
+
         movable = true;
         destructable = true;
-        tgs = TerrainGridSystem.instance;
-        animator = GetComponent<Animator>();
         health = maxHealth;
         energy = maxEnergy;
     }
@@ -87,6 +100,7 @@ public class Combatant : BaseBattlefieldObject
             } else {
                 state = State.IDLE;
                 ShowMoveRange(true);
+                battleManager.EnableEndTurnButton(true);
             }
         }
     }
@@ -98,12 +112,10 @@ public class Combatant : BaseBattlefieldObject
             int t_cell = tgs.cellHighlightedIndex;
             //tgs.CellFadeOut(t_cell, Color.red, 50);
             if (t_cell != -1 && t_cell != currentCellIndex) {
-                BaseBattlefieldObject obj = BattleManager.GetBattlefieldObjectAtCell(tgs.cells[t_cell]);
+                BaseBattlefieldObject obj = battleManager.GetBattlefieldObjectAtCell(tgs.cells[t_cell]);
                 int dist = tgs.CellGetHexagonDistance(currentCellIndex, t_cell);
                  if (obj != null) {
-                    Debug.Log("Target: " + obj.gameObject.name + ", dist: " + dist + ", energy req: " + attackEnergy + " out of " + energy);
                     if (dist <= attackRange && attackEnergy <= energy) {
-                        Debug.Log("attacking!");
                         Attack(obj);
                     }
                 } else {
@@ -123,6 +135,7 @@ public class Combatant : BaseBattlefieldObject
         moveQueue = new Queue<int>(moveList);
         state = State.MOVING;
         ShowMoveRange(false);
+        battleManager.EnableEndTurnButton(false);
     }
 
     public void BeginTurn()
@@ -141,14 +154,21 @@ public class Combatant : BaseBattlefieldObject
         turn = false;
         ShowMoveRange(false);
         energy = Mathf.Min(energy * 2, maxEnergy);
-        BattleManager.EndTurn();
+        battleManager.EndTurn();
     }
 
     void Attack(BaseBattlefieldObject target) {
         energy -= attackEnergy;
         Vector3 rotateTowards = Vector3.Scale(target.transform.position, new Vector3(1f, 0, 1f)) + new Vector3(0f, transform.position.y, 0f);
         transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
-        animator.SetTrigger("Attack");
+        battleManager.EnableEndTurnButton(false);
+        animancer.Play(attackAnimation).OnEnd = () =>
+        {
+            battleManager.EnableEndTurnButton(true);
+            animancer.Stop(attackAnimation);
+        };
+
+//        animator.SetTrigger("Attack");
 //        LeanTween.rotate(gameObject, rotateTowards, .2f).setOnComplete(() => animator.SetTrigger("Attack"));
     }
 
@@ -157,7 +177,7 @@ public class Combatant : BaseBattlefieldObject
     }
 
     void ShowMoveRange(bool show) {
-        BattleManager.ClearDebugSpheres();
+        battleManager.ClearDebugSpheres();
         if (show) {
             //tgs.highlightEffect = HIGHLIGHT_EFFECT.DualColors;
             currentCellIndex = tgs.CellGetAtPosition(transform.position, true).index;
@@ -166,7 +186,7 @@ public class Combatant : BaseBattlefieldObject
             for (int n = 0; n < moveRange.Count; n++)
             {
                 originalCellColors[n] = tgs.CellGetColor(moveRange[n]);
-                Color setColor = BattleManager.GetBattlefieldObjectAtCell(tgs.cells[moveRange[n]]) == null ? moveRangeColor : blockedMoveRangeColor;
+                Color setColor = battleManager.GetBattlefieldObjectAtCell(tgs.cells[moveRange[n]]) == null ? moveRangeColor : blockedMoveRangeColor;
                 tgs.CellSetColor(moveRange[n], setColor);
             }
         } else {

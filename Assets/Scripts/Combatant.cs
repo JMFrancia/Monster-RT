@@ -13,11 +13,11 @@ public class Combatant : BaseBattlefieldObject
     [SerializeField] int maxEnergy = 3;
     [SerializeField] int maxHealth = 8;
     [SerializeField] int stamina = 2;
+    [SerializeField] int attackEnergy = 3;
+    [SerializeField] int attackRange = 1;
 
     Color energyBarColor = Color.green;
     Color healthbarColor = Color.red;
-
-    Color[] originalCellColors;
 
     [ProgressBar(0, 0, MaxMember = "maxEnergy", Segmented = true, ColorMember = "energyBarColor")]
     [SerializeField]
@@ -38,21 +38,21 @@ public class Combatant : BaseBattlefieldObject
     bool turn = false;
     TerrainGridSystem tgs;
     State state = State.IDLE;
-
+    Animator animator;
     Queue<int> moveQueue;
+    bool inTransit = false;
+    Color[] originalCellColors;
+    List<int> moveRange;
+    int currentCellIndex;
     int currentMove;
     int totalMoves = 0;
-    bool inTransit = false;
-
-    List<int> moveRange;
-
-    int currentCellIndex;
 
     private void Awake()
     {
         movable = true;
         destructable = true;
         tgs = TerrainGridSystem.instance;
+        animator = GetComponent<Animator>();
         health = maxHealth;
         energy = maxEnergy;
     }
@@ -97,23 +97,32 @@ public class Combatant : BaseBattlefieldObject
         {
             int t_cell = tgs.cellHighlightedIndex;
             //tgs.CellFadeOut(t_cell, Color.red, 50);
-            if (t_cell != -1 && BattleManager.GetBattlefieldObjectAtCell(tgs.cells[t_cell]) == null)
-            {
-                int startCell = tgs.CellGetIndex(tgs.CellGetAtPosition(transform.position, true));
-                List<int> moveList = tgs.FindPath(startCell, t_cell, maxSteps: GetMoveRange());
-                if (moveList == null)
-                    return;
-                energy -= moveList.Count;
-                //tgs.CellFadeOut(moveList, Color.green, 5f);
-                moveQueue = new Queue<int>(moveList);
-                state = State.MOVING;
-                ShowMoveRange(false);
+            if (t_cell != -1 && t_cell != currentCellIndex) {
+                BaseBattlefieldObject obj = BattleManager.GetBattlefieldObjectAtCell(tgs.cells[t_cell]);
+                int dist = tgs.CellGetHexagonDistance(currentCellIndex, t_cell);
+                 if (obj != null) {
+                    Debug.Log("Target: " + obj.gameObject.name + ", dist: " + dist + ", energy req: " + attackEnergy + " out of " + energy);
+                    if (dist <= attackRange && attackEnergy <= energy) {
+                        Debug.Log("attacking!");
+                        Attack(obj);
+                    }
+                } else {
+                    MoveTo(t_cell);
+                }
             }
         }
     }
 
-    int GetMoveRange() {
-        return Mathf.Min(speed - totalMoves, energy);
+    void MoveTo(int cellIndex) {
+        int startCell = tgs.CellGetIndex(tgs.CellGetAtPosition(transform.position, true));
+        List<int> moveList = tgs.FindPath(startCell, cellIndex, maxSteps: GetMoveRange());
+        if (moveList == null)
+            return;
+        energy -= moveList.Count;
+        //tgs.CellFadeOut(moveList, Color.green, 5f);
+        moveQueue = new Queue<int>(moveList);
+        state = State.MOVING;
+        ShowMoveRange(false);
     }
 
     public void BeginTurn()
@@ -127,7 +136,27 @@ public class Combatant : BaseBattlefieldObject
 
     }
 
-    public void ShowMoveRange(bool show) {
+    public void EndTurn()
+    {
+        turn = false;
+        ShowMoveRange(false);
+        energy = Mathf.Min(energy * 2, maxEnergy);
+        BattleManager.EndTurn();
+    }
+
+    void Attack(BaseBattlefieldObject target) {
+        energy -= attackEnergy;
+        Vector3 rotateTowards = Vector3.Scale(target.transform.position, new Vector3(1f, 0, 1f)) + new Vector3(0f, transform.position.y, 0f);
+        transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
+        animator.SetTrigger("Attack");
+//        LeanTween.rotate(gameObject, rotateTowards, .2f).setOnComplete(() => animator.SetTrigger("Attack"));
+    }
+
+    int GetMoveRange() {
+        return Mathf.Min(speed - totalMoves, energy);
+    }
+
+    void ShowMoveRange(bool show) {
         BattleManager.ClearDebugSpheres();
         if (show) {
             //tgs.highlightEffect = HIGHLIGHT_EFFECT.DualColors;
@@ -146,13 +175,5 @@ public class Combatant : BaseBattlefieldObject
                 tgs.CellSetColor(moveRange[n], originalCellColors[n]);
             }
         }
-    }
-
-    public void EndTurn()
-    {
-        turn = false;
-        ShowMoveRange(false);
-        energy = Mathf.Min(energy * 2, maxEnergy);
-        BattleManager.EndTurn();
     }
 }

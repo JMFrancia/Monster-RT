@@ -4,10 +4,12 @@ using UnityEngine;
 using TGS;
 using System.Linq;
 using UnityEditor;
+using UnityEngine.UI;
 
 public class BattleManager : MonoBehaviour
 {
     [SerializeField] bool showDebugSpheres = false;
+    [SerializeField] Button endTurnButton;
 
     static Combatant[] combatants;
     static TerrainGridSystem tgs;
@@ -65,20 +67,22 @@ public class BattleManager : MonoBehaviour
     }
 
     public static BaseBattlefieldObject GetBattlefieldObjectAtCell(Cell cell) {
-        float radius = tgs.cellSize.x / 2;
+        float radius = tgs.cellSize.y * .4f;
         Vector3 spherePos = tgs.CellGetPosition(cell) + new Vector3(0f, 1f, 0f) * radius;
-
-        //Collider[] colliders = Physics.OverlapSphere(spherePos, radius);
         Collider[] colliders = Physics.OverlapSphere(spherePos, radius, LayerMask.GetMask(Globals.LayerNames.BATTLEFIELD_OBJECT));
         BaseBattlefieldObject[] bfObjs = colliders.Select(col => col.GetComponent<BaseBattlefieldObject>()).ToArray();
-        if (bfObjs.Length > 1) { 
-            Debug.LogError(string.Format("Overalpping battlfieldObjects detected at cell ({0}, {1}):", cell.row, cell.column));
+        if (bfObjs.Length > 1) {
+            string errorMsg = string.Format("Overlapping battlfieldObjects detected at cell ({0}, {1}):", cell.row, cell.column);
+            for(int n = 0; n < bfObjs.Length; n++) {
+                errorMsg += string.Format("\n{0}. {1}", n.ToString(), bfObjs[n].gameObject.name);
+            }
+            Debug.LogError(errorMsg);
         }
         if(bfObjs.Length == 0) {
-            AddDebugSphere(spherePos, radius, Color.green);
+            AddDebugSphere(spherePos, radius, Color.black);
             return null;
         }
-        AddDebugSphere(spherePos, radius, Color.red);
+        AddDebugSphere(spherePos, radius, Color.green);
         return bfObjs[0];
     }
 

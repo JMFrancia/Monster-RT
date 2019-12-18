@@ -195,6 +195,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 50
       objectReference: {fileID: 0}
+    - target: {fileID: 95000010583195036, guid: c334a7c41936e764391ae93ab0e1981d,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: c58dd151602194118b52fbaf8c04c790, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c334a7c41936e764391ae93ab0e1981d, type: 3}
 --- !u!1 &253865438
@@ -226,7 +231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c97b07d66c6e47b6a2732e46c9b371a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showDebugSpheres: 0
+  showDebugSpheres: 1
 --- !u!4 &253865440
 Transform:
   m_ObjectHideFlags: 0
@@ -316,6 +321,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 50
       objectReference: {fileID: 0}
+    - target: {fileID: 95000013350495782, guid: f3e92f0e6c7c8724b98eded63b438981,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: c58dd151602194118b52fbaf8c04c790, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f3e92f0e6c7c8724b98eded63b438981, type: 3}
 --- !u!1 &705507993
@@ -571,6 +581,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1171468508}
   m_CullTransparentMesh: 0
+--- !u!1 &1231116259 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1000013159722146, guid: f3e92f0e6c7c8724b98eded63b438981,
+    type: 3}
+  m_PrefabInstance: {fileID: 617684302}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1231116261
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231116259}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1304232944
 GameObject:
   m_ObjectHideFlags: 0
@@ -728,6 +763,8 @@ MonoBehaviour:
   maxEnergy: 5
   maxHealth: 8
   stamina: 2
+  attackEnergy: 3
+  attackRange: 1
   energy: 0
   health: 5
 --- !u!136 &1594226423
@@ -1220,6 +1257,8 @@ MonoBehaviour:
   maxEnergy: 5
   maxHealth: 8
   stamina: 2
+  attackEnergy: 3
+  attackRange: 1
   energy: 0
   health: 4
 --- !u!136 &1877761545

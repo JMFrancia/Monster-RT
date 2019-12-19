@@ -18,6 +18,8 @@ public class Combatant : BaseBattlefieldObject
     [SerializeField] int attackEnergy = 3;
     [SerializeField] int attackRange = 1;
 
+    [SerializeField] float attackAnimationThrust;
+
     Color energyBarColor = Color.green;
     Color healthbarColor = Color.red;
 
@@ -68,6 +70,19 @@ public class Combatant : BaseBattlefieldObject
         destructable = true;
         health = maxHealth;
         energy = maxEnergy;
+
+
+
+        //AnimationCurve curve = new AnimationCurve(attackAnimation.)
+
+        //attackAnimation.SetCurve("", typof(Transform), "localPosition.x", curve);
+    }
+
+    private void Start()
+    {
+        foreach(string s in CustomAnimationLibrary.instance.GetPropertyNames(attackAnimation)) {
+            Debug.Log(s);
+        }
     }
 
     private void Update()

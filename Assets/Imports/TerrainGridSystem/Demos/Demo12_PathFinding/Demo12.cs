@@ -162,9 +162,7 @@ namespace TGS {
 				if (useLineOfSight) {
 					tgs.CellTestLineOfSight (tgs.cellHighlightedIndex, neighbours, CELLS_ALL_NAVIGATABLE);
 				}
-				for (int k = 0; k < neighbours.Count; k++) {
-					tgs.CellFlash (neighbours [k], Color.green, 1f);
-				}
+                tgs.CellFlash(neighbours, Color.yellow, 1f);
 			}
 		}
 

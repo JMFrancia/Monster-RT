@@ -14,7 +14,7 @@ namespace TGS {
 		State state;
 		TerrainGridSystem tgs;
 		List<int> moveList;
-		short moveCounter = 0;
+		short moveCounter;
 		int lastTerrIndex;
 
 		// Use this for initialization
@@ -59,12 +59,12 @@ namespace TGS {
 						moveList = tgs.FindPath (startCell, t_cell, out totalCost);
 						if (moveList == null)
 							return;
-						Debug.Log ("Total move cost: " + totalCost);
+						Debug.Log ("Cell Clicked: " + t_cell + ", Total move cost: " + totalCost);
 						tgs.CellFadeOut (moveList, Color.green, 5f);
 						moveCounter = 0;
 						state = State.MOVING;
 					} else {
-						Debug.Log ("NULL_CELL");
+						Debug.Log ("No Cell");
 					}
 				}
 				break;

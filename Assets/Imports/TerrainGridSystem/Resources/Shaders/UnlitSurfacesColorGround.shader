@@ -1,6 +1,7 @@
 ﻿Shader "Terrain Grid System/Unlit Surface Color Ground" {
  
 Properties {
+    _MainTex ("Texture", 2D) = "black" {}
     _Color ("Color", Color) = (1,1,1,1)
     _Offset ("Depth Offset", Int) = -1
     _ZWrite("ZWrite", Int) = 0

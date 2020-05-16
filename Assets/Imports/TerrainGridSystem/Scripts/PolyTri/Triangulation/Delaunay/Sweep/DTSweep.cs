@@ -265,21 +265,21 @@ namespace TGS.Poly2Tri {
 		///          C                              C
 		///          
 		/// </summary>
-		private static void FinalizationConstraints (DTSweepContext tcx) {
-			// Get an Internal triangle to start with
-			DelaunayTriangle t = tcx.Front.Head.Triangle;
-			TriangulationPoint p = tcx.Front.Head.Point;
-			while (!t.GetConstrainedEdgeCW (p)) {
-				DelaunayTriangle tTmp = t.NeighborCCWFrom (p);
-				if (tTmp == null) {
-					break;
-				}
-				t = tTmp;
-			}
+		//private static void FinalizationConstraints (DTSweepContext tcx) {
+		//	// Get an Internal triangle to start with
+		//	DelaunayTriangle t = tcx.Front.Head.Triangle;
+		//	TriangulationPoint p = tcx.Front.Head.Point;
+		//	while (!t.GetConstrainedEdgeCW (p)) {
+		//		DelaunayTriangle tTmp = t.NeighborCCWFrom (p);
+		//		if (tTmp == null) {
+		//			break;
+		//		}
+		//		t = tTmp;
+		//	}
 
-			// Collect interior triangles constrained by edges
-			tcx.MeshClean (t);
-		}
+		//	// Collect interior triangles constrained by edges
+		//	tcx.MeshClean (t);
+		//}
 
 
 		/// <summary>
@@ -653,7 +653,7 @@ namespace TGS.Poly2Tri {
 
 
 		/// <summary>
-		/// Scan part of the FlipScan algorithm<br>
+		/// Scan part of the FlipScan algorithm
 		/// When a triangle pair isn't flippable we will scan for the next 
 		/// point that is inside the flip triangle scan area. When found 
 		/// we generate a new flipEdgeEvent
@@ -739,7 +739,7 @@ namespace TGS.Poly2Tri {
 
 		/// <summary>
 		/// Fills a basin that has formed on the Advancing Front to the right
-		/// of given node.<br>
+		/// of given node.
 		/// First we decide a left,bottom and right node that forms the 
 		/// boundaries of the basin. Then we do a reqursive fill.
 		/// </summary>

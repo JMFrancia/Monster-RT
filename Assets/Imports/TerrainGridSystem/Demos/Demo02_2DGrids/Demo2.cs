@@ -19,15 +19,17 @@ namespace TGS {
 			// Events
 			// OnCellMouseDown occurs when user presses the mouse button on a cell
 			tgs.OnCellMouseDown += OnCellMouseDown;
-			// OnCellMouseUp occurs when user releases the mouse button on a cell
+			// OnCellMouseUp occurs when user releases the mouse button on a cell even after a drag
+            // OnCellClick occurs when user presses and releases the mouse button as in a normal click
 			tgs.OnCellClick += OnCellClick;
-		}
+        }
 
-		void OnCellMouseDown (int cellIndex, int buttonIndex) {
+        void OnCellMouseDown (int cellIndex, int buttonIndex) {
 			Debug.Log ("Mouse DOWN on cell #" + cellIndex);
 		}
 
 		void OnCellClick (int cellIndex, int buttonIndex) {
+            tgs.CellSetTerritory(cellIndex, 200);
 			if (buttonIndex == 0) {
 				Debug.Log ("Mouse CLICK on cell #" + cellIndex + ", Merging!");
 				MergeCell (tgs.cellHighlighted);
@@ -53,5 +55,5 @@ namespace TGS {
 			tgs.Redraw ();
 		}
 
-	}
+    }
 }

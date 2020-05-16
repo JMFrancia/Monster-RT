@@ -1,10 +1,8 @@
 using UnityEngine;
 using System;
 using System.Text;
-using System.Collections;
 using System.Collections.Generic;
 using TGS.Geom;
-using TGS.PathFinding;
 using System.Globalization;
 
 namespace TGS {
@@ -527,7 +525,7 @@ namespace TGS {
                     || (surfMaterial.color != color && !isHighlighted) || (texture != null && (region.customMaterial == null || region.customMaterial.mainTexture != texture))) {
                     Material goodMaterial = GetColoredTexturedMaterial(SurfaceType.Cell, color, texture, overlay);
                     region.customMaterial = goodMaterial;
-                    ApplyMaterialToSurface(renderer, goodMaterial);
+                    ApplyMaterialToSurface(region, goodMaterial);
                 }
             } else {
                 surfMaterial = GetColoredTexturedMaterial(SurfaceType.Cell, color, texture, overlay);
@@ -556,6 +554,12 @@ namespace TGS {
             if (!cells[cellIndex].visible) {
                 surf.SetActive(false);
             }
+
+            // Optimization: if color alpha is zero, disable the entire surface
+            if (color.a <= 0) {
+                CellHideRegionSurface(cellIndex);
+            }
+
             return surf;
         }
 
@@ -648,9 +652,8 @@ namespace TGS {
         /// <summary>
         /// Temporarily colors a cell for "duration" in seconds.
         /// </summary>
-        public void CellColorTemp(int cellIndex, Color color, float duration = 2f, int repetitions = 1) {
-            Color originalColor = CellGetColor(cellIndex);
-            CellAnimate(FADER_STYLE.ColorTemp, cellIndex, originalColor, color, duration, repetitions);
+        public void CellColorTemp(int cellIndex, Color color, float duration = 2f) {
+            CellAnimate(FADER_STYLE.ColorTemp, cellIndex, Misc.ColorNull, color, duration, 1);
         }
 
         /// <summary>
@@ -658,7 +661,7 @@ namespace TGS {
         /// </summary>
         public void CellColorTemp(Cell cell, Color color, float duration = 2f, int repetitions = 1) {
             int cellIndex = CellGetIndex(cell);
-            CellColorTemp(cellIndex, color, duration, repetitions);
+            CellAnimate(FADER_STYLE.ColorTemp, cellIndex, Misc.ColorNull, color, duration, repetitions);
         }
 
         /// <summary>
@@ -669,7 +672,7 @@ namespace TGS {
                 return;
             int cellCount = cellIndices.Count;
             for (int k = 0; k < cellCount; k++) {
-                CellColorTemp(cellIndices[k], color, duration, repetitions);
+                CellAnimate(FADER_STYLE.ColorTemp, cellIndices[k], Misc.ColorNull, color, duration, repetitions);
             }
         }
 
@@ -743,7 +746,7 @@ namespace TGS {
         /// <summary>
         /// Blinks a cell with "color" and "duration" in seconds.
         /// </summary>
-        public void CellBlink(int cellIndex, Color color, float duration, int repetitions = 1) {
+        public void CellBlink(int cellIndex, Color color, float duration = 2f, int repetitions = 1) {
             CellAnimate(FADER_STYLE.Blink, cellIndex, Misc.ColorNull, color, duration, repetitions);
         }
 
@@ -760,7 +763,7 @@ namespace TGS {
         }
 
         /// <summary>
-        /// Returns the rect enclosing the cell in local or world space coordinates
+        /// Returns the rect enclosing the cell in local space coordinates
         /// </summary>
         public Rect CellGetRect(int cellIndex) {
             if (cells == null || cellIndex < 0 || cellIndex >= cells.Count)
@@ -906,6 +909,19 @@ namespace TGS {
             return neighbours;
         }
 
+
+        /// <summary>
+        /// Returns the index of an ajacent cell by the side name
+        /// </summary>
+        public int CellGetNeighbour(int cellIndex, CELL_SIDE side) {
+            int r, c;
+            CELL_SIDE os;
+            if (!GetAdjacentCellCoordinates(cellIndex, side, out r, out c, out os)) {
+                return -1;
+            }
+            return CellGetIndex(r, c);
+        }
+
         /// <summary>
         /// Returns a list of neighbour cells for specificed cell index.
         /// </summary>
@@ -972,12 +988,18 @@ namespace TGS {
                         count++;
                     } else {
                         if (distanceFunction(cellIndex, ci) <= maxDistance) {
-                            int stepsCount = FindPath(cellIndex, ci, tempListCells, out dummyCost, maxSearchCost, maxDistance, cellGroupMask, canCrossCheckType);
-                            for (int k = 0; k < stepsCount; k++) {
-                                cells[tempListCells[k]].iteration = cellIteration;
+                            if (ci == 323) {
+                                int jj = 9;
+                                jj++;
                             }
-                            cellIndices.Add(ci);
-                            count++;
+                            int stepsCount = FindPath(cellIndex, ci, tempListCells, out dummyCost, maxSearchCost, maxDistance, cellGroupMask, canCrossCheckType);
+                            if (stepsCount > 0) {
+                                for (int k = 0; k < stepsCount; k++) {
+                                    cells[tempListCells[k]].iteration = cellIteration;
+                                }
+                                cellIndices.Add(ci);
+                                count++;
+                            }
                         }
                     }
                     if (count >= maxResultsCount) break;
@@ -1064,7 +1086,7 @@ namespace TGS {
         /// Sets current cell's fill color. Use CellToggleRegionSurface for more options
         /// </summary>
         public void CellSetColor(int cellIndex, Color color) {
-            CellToggleRegionSurface(cellIndex, color.a > 0, color, false, null, Misc.Vector2one, Misc.Vector2zero, 0, false, false);
+            CellToggleRegionSurface(cellIndex, true, color, false, null, Misc.Vector2one, Misc.Vector2zero, 0, false, false);
         }
 
 
@@ -1345,6 +1367,15 @@ namespace TGS {
             return go;
         }
 
+        /// <summary>
+        /// Returns true if a given cell can be crossed by using the pathfinding engine.
+        /// </summary>
+        public bool CellGetCanCross(int cellIndex) {
+            if (cellIndex < 0 || cellIndex >= cells.Count)
+                return false;
+            return cells[cellIndex].canCross;
+        }
+
 
         /// <summary>
         /// Specifies if a given cell can be crossed by using the pathfinding engine.
@@ -1362,7 +1393,6 @@ namespace TGS {
         /// <param name="cellIndex">Cell index.</param>
         /// <param name="side">Side of the hexagon.</param>
         /// <param name="cost">Crossing cost.</param>
-        /// <param name="symmetrical">Applies crossing cost to both directions of the given side.</param>
         public void CellSetSideCrossCost(int cellIndex, CELL_SIDE side, float cost, CELL_DIRECTION direction = CELL_DIRECTION.Both) {
             if (cellIndex < 0 || cellIndex >= cells.Count)
                 return;
@@ -1371,90 +1401,9 @@ namespace TGS {
                 cell.SetSideCrossCost(side, cost);
             }
             if (direction != CELL_DIRECTION.Exiting) {
-                int r = cell.row;
-                int c = cell.column;
-                int or = r, oc = c;
-                CELL_SIDE os = side;
-                if (_gridTopology == GRID_TOPOLOGY.Hexagonal) {
-                    switch (side) {
-                        case CELL_SIDE.Bottom:
-                            or--;
-                            os = CELL_SIDE.Top;
-                            break;
-                        case CELL_SIDE.Top:
-                            or++;
-                            os = CELL_SIDE.Bottom;
-                            break;
-                        case CELL_SIDE.BottomRight:
-                            if (oc % 2 != 0) {
-                                or--;
-                            }
-                            oc++;
-                            os = CELL_SIDE.TopLeft;
-                            break;
-                        case CELL_SIDE.TopRight:
-                            if (oc % 2 == 0) {
-                                or++;
-                            }
-                            oc++;
-                            os = CELL_SIDE.BottomLeft;
-                            break;
-                        case CELL_SIDE.TopLeft:
-                            if (oc % 2 == 0) {
-                                or++;
-                            }
-                            oc--;
-                            os = CELL_SIDE.BottomRight;
-                            break;
-                        case CELL_SIDE.BottomLeft:
-                            if (oc % 2 != 0) {
-                                or--;
-                            }
-                            oc--;
-                            os = CELL_SIDE.TopRight;
-                            break;
-                    }
-                } else {
-                    switch (side) {
-                        case CELL_SIDE.Bottom:
-                            or--;
-                            os = CELL_SIDE.Top;
-                            break;
-                        case CELL_SIDE.Top:
-                            or++;
-                            os = CELL_SIDE.Bottom;
-                            break;
-                        case CELL_SIDE.BottomRight:
-                            or--;
-                            oc++;
-                            os = CELL_SIDE.TopLeft;
-                            break;
-                        case CELL_SIDE.TopRight:
-                            or++;
-                            oc++;
-                            os = CELL_SIDE.BottomLeft;
-                            break;
-                        case CELL_SIDE.TopLeft:
-                            or++;
-                            oc--;
-                            os = CELL_SIDE.BottomRight;
-                            break;
-                        case CELL_SIDE.BottomLeft:
-                            or--;
-                            oc--;
-                            os = CELL_SIDE.TopRight;
-                            break;
-                        case CELL_SIDE.Left:
-                            oc--;
-                            os = CELL_SIDE.Right;
-                            break;
-                        case CELL_SIDE.Right:
-                            oc++;
-                            os = CELL_SIDE.Left;
-                            break;
-                    }
-                }
-                if (or >= 0 && or < _cellRowCount && oc >= 0 && oc < _cellColumnCount) {
+                int or, oc;
+                CELL_SIDE os;
+                if (GetAdjacentCellCoordinates(cellIndex, side, out or, out oc, out os)) {
                     int oindex = CellGetIndex(or, oc);
                     if (oindex >= 0) {
                         cells[oindex].SetSideCrossCost(os, cost);
@@ -1463,6 +1412,7 @@ namespace TGS {
             }
         }
 
+        /// <summary>
         /// Gets the cost of crossing any hexagon side.
         /// </summary>
         /// <param name="cellIndex">Cell index.</param>
@@ -1475,95 +1425,13 @@ namespace TGS {
             if (direction == CELL_DIRECTION.Exiting) {
                 return cell.GetSideCrossCost(side);
             }
-            int r = cell.row;
-            int c = cell.column;
-            int or = r, oc = c;
-            CELL_SIDE os = side;
-            if (_gridTopology == GRID_TOPOLOGY.Hexagonal) {
-                switch (side) {
-                    case CELL_SIDE.Bottom:
-                        or--;
-                        os = CELL_SIDE.Top;
-                        break;
-                    case CELL_SIDE.Top:
-                        or++;
-                        os = CELL_SIDE.Bottom;
-                        break;
-                    case CELL_SIDE.BottomRight:
-                        if (oc % 2 != 0) {
-                            or--;
-                        }
-                        oc++;
-                        os = CELL_SIDE.TopLeft;
-                        break;
-                    case CELL_SIDE.TopRight:
-                        if (oc % 2 == 0) {
-                            or++;
-                        }
-                        oc++;
-                        os = CELL_SIDE.BottomLeft;
-                        break;
-                    case CELL_SIDE.TopLeft:
-                        if (oc % 2 == 0) {
-                            or++;
-                        }
-                        oc--;
-                        os = CELL_SIDE.BottomRight;
-                        break;
-                    case CELL_SIDE.BottomLeft:
-                        if (oc % 2 != 0) {
-                            or--;
-                        }
-                        oc--;
-                        os = CELL_SIDE.TopRight;
-                        break;
-                }
-            } else {
-                switch (side) {
-                    case CELL_SIDE.Bottom:
-                        or--;
-                        os = CELL_SIDE.Top;
-                        break;
-                    case CELL_SIDE.Top:
-                        or++;
-                        os = CELL_SIDE.Bottom;
-                        break;
-                    case CELL_SIDE.BottomRight:
-                        or--;
-                        oc++;
-                        os = CELL_SIDE.TopLeft;
-                        break;
-                    case CELL_SIDE.TopRight:
-                        or++;
-                        oc++;
-                        os = CELL_SIDE.BottomLeft;
-                        break;
-                    case CELL_SIDE.TopLeft:
-                        or++;
-                        oc--;
-                        os = CELL_SIDE.BottomRight;
-                        break;
-                    case CELL_SIDE.BottomLeft:
-                        or--;
-                        oc--;
-                        os = CELL_SIDE.TopRight;
-                        break;
-                    case CELL_SIDE.Right:
-                        oc++;
-                        os = CELL_SIDE.Left;
-                        break;
-                    case CELL_SIDE.Left:
-                        oc--;
-                        os = CELL_SIDE.Right;
-                        break;
-                }
-            }
-            if (or >= 0 && or < _cellRowCount && oc >= 0 && oc < _cellColumnCount) {
+            int or, oc;
+            CELL_SIDE os;
+            if (GetAdjacentCellCoordinates(cellIndex, side, out or, out oc, out os)) {
                 int oindex = CellGetIndex(or, oc);
                 return cells[oindex].GetSideCrossCost(os);
-            } else {
-                return 0;
             }
+            return 0;
         }
 
         /// <summary>
@@ -1669,7 +1537,7 @@ namespace TGS {
             }
         }
 
-        /// </summary>
+        /// <summary>
         /// Returns true if the side of a cell blocks LOS.
         /// </summary>
         /// <param name="cellIndex">Cell index.</param>
@@ -1801,7 +1669,6 @@ namespace TGS {
         /// Returns the cost of entering or exiting a given hexagonal cell without specifying a specific edge. This method is used along CellSetCrossCost which doesn't take into account per-edge costs.
         /// </summary>
         /// <param name="cellIndex">Cell index.</param>
-        /// <param name="cost">Crossing cost.</param>
         public float CellGetCrossCost(int cellIndex, CELL_DIRECTION direction = CELL_DIRECTION.Entering) {
             if (cellIndex < 0 || cellIndex >= cells.Count)
                 return 0;
@@ -1862,7 +1729,7 @@ namespace TGS {
                     indices.Add(k);
                 }
             }
-            return indices.Count ;
+            return indices.Count;
         }
 
 
@@ -2076,17 +1943,19 @@ namespace TGS {
             if (cellIndex < 0 || cellIndex >= cells.Count)
                 return false;
             Cell cell = cells[cellIndex];
+            if (cell.territoryIndex == territoryIndex) return true;
             int terrCount = territories.Count;
             if (cell.territoryIndex >= 0 && cell.territoryIndex < terrCount && territories[cell.territoryIndex].cells.Contains(cell)) {
                 territories[cell.territoryIndex].isDirty = true;
                 territories[cell.territoryIndex].cells.Remove(cell);
             }
-            cells[cellIndex].territoryIndex = territoryIndex;
+            cell.territoryIndex = territoryIndex;
             if (territoryIndex >= 0 && territoryIndex < terrCount) {
                 territories[territoryIndex].isDirty = true;
+                territories[territoryIndex].cells.Add(cell);
             }
             needUpdateTerritories = true;
-            issueRedraw = RedrawType.Incremental;
+            issueRedraw = RedrawType.IncrementalTerritories;
             return true;
         }
 
@@ -2198,7 +2067,7 @@ namespace TGS {
                 if (length > 5) {
                     Single.TryParse(cellInfo[2], out color.a);
                     if (color.a > 0) {
-                        Single.TryParse(cellInfo[3], NumberStyles.Any, CultureInfo.InvariantCulture,  out color.r);
+                        Single.TryParse(cellInfo[3], NumberStyles.Any, CultureInfo.InvariantCulture, out color.r);
                         Single.TryParse(cellInfo[4], NumberStyles.Any, CultureInfo.InvariantCulture, out color.g);
                         Single.TryParse(cellInfo[5], NumberStyles.Any, CultureInfo.InvariantCulture, out color.b);
                     }
@@ -2304,8 +2173,6 @@ namespace TGS {
         /// Traces a line between two positions and check if there's no cell blocking the line
         /// </summary>
         /// <returns><c>true</c>, if there's a straight path of non-blocking cells between the two positions<c>false</c> otherwise.</returns>
-        /// <param name="startPosition">Start position.</param>
-        /// <param name="endPosition">End position.</param>
         /// <param name="cellIndices">Cell indices.</param>
         /// <param name="cellGroupMask">Optional cell layer mask</param>
         /// <param name="lineResolution">Resolution of the line. Increase to improve line accuracy.</param>
@@ -2466,8 +2333,6 @@ namespace TGS {
         /// Returns a line composed of cells and world positions from starting cell to ending cell
         /// </summary>
         /// <returns><c>true</c>, if there's a straight path of non-blocking cells between the two positions<c>false</c> otherwise.</returns>
-        /// <param name="startPosition">Start position.</param>
-        /// <param name="endPosition">End position.</param>
         /// <param name="cellIndices">Cell indices.</param>
         /// <param name="lineResolution">Resolution of the line. Increase to improve line accuracy.</param>
         public void CellGetLine(int startCellIndex, int endCellIndex, ref List<int> cellIndices, ref List<Vector3> worldPositions, int lineResolution = 2) {

@@ -169,7 +169,6 @@ namespace TGS {
 		/// <summary>
 		/// Updates cell contents based on their position in the world
 		/// </summary>
-		/// <param name="grid">Grid.</param>
 		void UpdateGridContents () {
 			int textureWidth = worldTexture.width;
 			int textureHeight = worldTexture.height;

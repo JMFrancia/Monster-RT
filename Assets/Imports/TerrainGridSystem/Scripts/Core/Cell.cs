@@ -171,7 +171,6 @@ namespace TGS {
 		/// Assigns a crossing cost for a given hexagonal side
 		/// </summary>
 		/// <param name="side">Side.</param>
-		/// <param name="cost">Cost.</param>
 		public void SetSideBlocksLOS(CELL_SIDE side, bool blocks) {
 			if (_blocksLOS==null) _blocksLOS = new bool[8];
 			_blocksLOS[(int)side] = blocks;

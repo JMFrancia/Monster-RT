@@ -388,7 +388,7 @@ namespace TGS.Poly2Tri {
 		}
 
 
-		//    /// <summary>
+		/// <summary>
 		/// Translates the vertices with the specified vector.
 		/// </summary>
 		/// <param name="vector">The vector.</param>
@@ -410,11 +410,11 @@ namespace TGS.Poly2Tri {
 		}
 
 
-		/// <summary>
-		/// Rotate the vertices with the defined value in radians.
-		/// </summary>
-		/// <param name="value">The amount to rotate by in radians.</param>
-		public void Rotate (double radians) {
+        /// <summary>
+        /// Rotate the vertices with the defined value in radians.
+        /// </summary>
+        /// <param name="radians">The amount to rotate by in radians.</param>
+        public void Rotate (double radians) {
 			// kickin' it old-skool since I don't want to create a Matrix class for now.
 			double cosr = Math.Cos (radians);
 			double sinr = Math.Sin (radians);
@@ -519,7 +519,6 @@ namespace TGS.Poly2Tri {
 		///
 		/// From Eric Jordan's convex decomposition library
 		/// </summary>
-		/// <param name="printErrors"></param>
 		/// <returns></returns>
 		public PolygonError CheckPolygon () {
 			PolygonError error = PolygonError.None;
@@ -693,7 +692,6 @@ namespace TGS.Poly2Tri {
 		/// Removes all collinear points on the polygon.
 		/// Has a default bias of 0
 		/// </summary>
-		/// <param name="polygon">The polygon that needs simplification.</param>
 		/// <returns>A simplified polygon.</returns>
 		public void Simplify () {
 			Simplify (0.0);
@@ -716,7 +714,6 @@ namespace TGS.Poly2Tri {
 		/// polygon.  Caveat Emptor!
 		/// 
 		/// </summary>
-		/// <param name="polygon">The polygon that needs simplification.</param>
 		/// <param name="bias">The distance bias between points. Points closer than this will be 'joined'.</param>
 		/// <returns>A simplified polygon.</returns>
 		public void Simplify (double bias) {

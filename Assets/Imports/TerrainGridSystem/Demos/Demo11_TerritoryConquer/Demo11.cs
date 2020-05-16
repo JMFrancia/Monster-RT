@@ -39,21 +39,21 @@ namespace TGS {
 		}
 
 		void changeCellOwner (int cellIndex) {
-			int currentTerritory = tgs.cells [cellIndex].territoryIndex;
+			int currentTerritoryIndex = tgs.cells [cellIndex].territoryIndex;
 			// Looks for a neighbour territory
 			List<Cell> neighbours = tgs.CellGetNeighbours (cellIndex);
 			for (int k = 0; k < neighbours.Count; k++) {
-				if (neighbours [k].territoryIndex != currentTerritory) {
-					currentTerritory = neighbours [k].territoryIndex;
+				if (neighbours [k].territoryIndex != currentTerritoryIndex) {
+					currentTerritoryIndex = neighbours [k].territoryIndex;
 					break;
 				}
 			}
 
-			if (tgs.CellGetTerritoryIndex (cellIndex) != currentTerritory) {
-				tgs.CellSetTerritory (cellIndex, currentTerritory);
+			if (tgs.CellGetTerritoryIndex (cellIndex) != currentTerritoryIndex) {
+				tgs.CellSetTerritory (cellIndex, currentTerritoryIndex);
 			} else {
 				// get cells on the frontier
-				tgs.TerritoryGetFrontierCells (currentTerritory, ref cellIndices);
+				tgs.TerritoryGetFrontierCells (currentTerritoryIndex, ref cellIndices);
 				tgs.CellFlash (cellIndices, Color.white, 2f);
 
 

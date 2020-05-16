@@ -20,8 +20,8 @@ namespace TGS_Editor {
 
 		Color colorSelection, cellColor;
 		int textureMode, cellTag;
-		static GUIStyle toggleButtonStyleNormal = null;
-		static GUIStyle toggleButtonStyleToggled = null;
+		static GUIStyle toggleButtonStyleNormal;
+		static GUIStyle toggleButtonStyleToggled;
 		SerializedProperty isDirty;
 		StringBuilder sb;
 		Vector2 cellSize;
@@ -75,7 +75,7 @@ namespace TGS_Editor {
 			}
 			if (GUILayout.Button ("Redraw")) {
 				tgs.Redraw (false);
-				EditorGUIUtility.ExitGUI ();
+                GUIUtility.ExitGUI();
 			}
 			if (GUILayout.Button ("Clear")) {
 				if (EditorUtility.DisplayDialog ("Clear All", "Remove any color/texture from cells and territories?", "Ok", "Cancel")) {
@@ -141,8 +141,8 @@ namespace TGS_Editor {
 				if (tgs.numCells > 10000) {
 					EditorGUILayout.HelpBox ("Total cell count exceeds recommended maximum of 10.000!", MessageType.Warning);
 				}
-			} else if (tgs.numCells > 50000) {
-				EditorGUILayout.HelpBox ("Total cell count exceeds recommended maximum of 50.000!", MessageType.Warning);
+			} else if (tgs.rowCount > TerrainGridSystem.MAX_ROWS_OR_COLUMNS || tgs.columnCount > TerrainGridSystem.MAX_ROWS_OR_COLUMNS) {
+				EditorGUILayout.HelpBox ("Total row or column count exceeds recommended maximum of " + TerrainGridSystem.MAX_ROWS_OR_COLUMNS + "!", MessageType.Warning);
 			}
 
 			if (!bakedVoronoi) {
@@ -287,14 +287,7 @@ namespace TGS_Editor {
 			EditorGUI.indentLevel++;
 
 			tgs.territoryFrontiersColor = EditorGUILayout.ColorField ("Frontier Color", tgs.territoryFrontiersColor);
-			tgs.territoryFrontiersThickness = EditorGUILayout.Slider ("Thickness", tgs.territoryFrontiersThickness, 1f, 5f);
-			if (tgs.territoryFrontiersThickness > 1f) {
-				if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Metal) {
-					EditorGUILayout.HelpBox ("Setting thickness value greater than 1 uses geometry shader which are not supported on Metal. Either change Graphics API (ie. use OpenGL) or set thickness back to 1.", MessageType.Error);
-				} else {
-					EditorGUILayout.HelpBox ("Setting thickness value greater than 1 uses geometry shader (shader model 4.0 required, might not work on some mobile devices)", MessageType.Info);
-				}
-			}
+			tgs.territoryFrontiersThickness = EditorGUILayout.Slider ("Thickness", tgs.territoryFrontiersThickness, 1f, 15f);
 
 			tgs.territoryHighlightColor = EditorGUILayout.ColorField ("Highlight Color", tgs.territoryHighlightColor);
 			tgs.territoryDisputedFrontierColor = EditorGUILayout.ColorField (new GUIContent ("Disputed Frontier", "Color for common frontiers between two territories."), tgs.territoryDisputedFrontierColor);
@@ -310,14 +303,7 @@ namespace TGS_Editor {
 			EditorGUI.indentLevel++;
 			if (tgs.showCells) {
 				tgs.cellBorderColor = EditorGUILayout.ColorField ("Border Color", tgs.cellBorderColor);
-				tgs.cellBorderThickness = EditorGUILayout.Slider ("Thickness", tgs.cellBorderThickness, 1f, 5f);
-				if (tgs.cellBorderThickness > 1f) {
-					if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Metal) {
-						EditorGUILayout.HelpBox ("Setting thickness value greater than 1 uses geometry shader which are not supported on Metal. Either change Graphics API (ie. use OpenGL) or set thickness back to 1.", MessageType.Error);
-					} else {
-						EditorGUILayout.HelpBox ("Setting thickness value greater than 1 uses geometry shader (shader model 4.0 required, might not work on some mobile devices)", MessageType.Info);
-					}
-				}
+				tgs.cellBorderThickness = EditorGUILayout.Slider ("Thickness", tgs.cellBorderThickness, 1f, 10f);
 			}
 			tgs.cellHighlightColor = EditorGUILayout.ColorField ("Highlight Color", tgs.cellHighlightColor);
 			EditorGUI.indentLevel--;
@@ -359,6 +345,7 @@ namespace TGS_Editor {
 				}
 			}
 
+            tgs.useGeometryShaders = EditorGUILayout.Toggle(new GUIContent("Use Geometry Shaders", "Use geometry shaders if platform supports them."), tgs.useGeometryShaders);
 			tgs.transparentBackground = EditorGUILayout.Toggle ("No Background", tgs.transparentBackground);
 
             if (tgs.transparentBackground) {
@@ -438,7 +425,7 @@ namespace TGS_Editor {
 						for (int k = 0; k < selectedCount; k++) {
 							if (cellSelectedIndices [k] < 0 || cellSelectedIndices [k] >= tgs.cellCount) {
 								cellSelectedIndices.Clear ();
-								EditorGUIUtility.ExitGUI ();
+                                GUIUtility.ExitGUI();
 								return;
 							}
 						}
@@ -475,7 +462,14 @@ namespace TGS_Editor {
 							}
 							needsRedraw = true;
 						}
+
+						bool canCross = selectedCell.canCross;
 						selectedCell.canCross = EditorGUILayout.Toggle (new GUIContent("   Can Cross", "This cell can be crossed when calculating a route using path finding."), selectedCell.canCross);
+                        if (selectedCell.canCross != canCross) {
+							for (int k = 0; k < selectedCount; k++) {
+								tgs.cells[cellSelectedIndices[k]].canCross = selectedCell.canCross;
+							}
+						}
 
                         if (selectedCount == 1) {
                             EditorGUILayout.BeginHorizontal();

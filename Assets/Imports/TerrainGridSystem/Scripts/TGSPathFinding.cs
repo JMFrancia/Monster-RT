@@ -119,8 +119,6 @@ namespace TGS {
         /// Returns an optimal path from startPosition to endPosition with options.
         /// </summary>
         /// <returns>The route consisting of a list of cell indexes.</returns>
-        /// <param name="startPosition">Start position in map coordinates (-0.5...0.5)</param>
-        /// <param name="endPosition">End position in map coordinates (-0.5...0.5)</param>
         /// <param name="maxSearchCost">Maximum search cost for the path finding algorithm. A value of 0 will use the global default defined by pathFindingMaxCost</param>
         /// <param name="maxSteps">Maximum steps for the path. A value of 0 will use the global default defined by pathFindingMaxSteps</param>
         public List<int> FindPath(int cellIndexStart, int cellIndexEnd, float maxSearchCost = 0, int maxSteps = 0, int cellGroupMask = -1) {
@@ -132,12 +130,9 @@ namespace TGS {
 		/// Returns an optimal path from startPosition to endPosition with options.
 		/// </summary>
 		/// <returns>The route consisting of a list of cell indexes.</returns>
-		/// <param name="startPosition">Start position in map coordinates (-0.5...0.5)</param>
-		/// <param name="endPosition">End position in map coordinates (-0.5...0.5)</param>
 		/// <param name="totalCost">The total accumulated cost for the path</param>
 		/// <param name="maxSearchCost">Maximum search cost for the path finding algorithm. A value of 0 will use the global default defined by pathFindingMaxCost</param>
 		/// <param name="maxSteps">Maximum steps for the path. A value of 0 will use the global default defined by pathFindingMaxSteps</param>
-		/// <param name="ignoreStartEndCellCanCrossCheck">Pass true to ignore verification if starting/end cell are marked as blocked or not.</param>
 		public List<int> FindPath(int cellIndexStart, int cellIndexEnd, out float totalCost, float maxSearchCost = 0, int maxSteps = 0, int cellGroupMask = -1, CanCrossCheckType canCrossCheckType = CanCrossCheckType.Default) {
             List<int> results = new List<int>();
             FindPath(cellIndexStart, cellIndexEnd, results, out totalCost, maxSearchCost, maxSteps, cellGroupMask, canCrossCheckType);
@@ -149,13 +144,10 @@ namespace TGS {
         /// Returns an optimal path from startPosition to endPosition with options.
         /// </summary>
         /// <returns>The route consisting of a list of cell indexes.</returns>
-        /// <param name="startPosition">Start position in map coordinates (-0.5...0.5)</param>
-        /// <param name="endPosition">End position in map coordinates (-0.5...0.5)</param>
         /// <param name="cellIndices">User provided list to fill with path indices</param>
         /// <param name="totalCost">The total accumulated cost for the path</param>
         /// <param name="maxSearchCost">Maximum search cost for the path finding algorithm. A value of 0 will use the global default defined by pathFindingMaxCost</param>
         /// <param name="maxSteps">Maximum steps for the path. A value of 0 will use the global default defined by pathFindingMaxSteps</param>
-        /// <param name="ignoreStartEndCellCanCrossCheck">Pass true to ignore verification if starting/end cell are marked as blocked or not.</param>
         public int FindPath(int cellIndexStart, int cellIndexEnd, List<int> cellIndices, out float totalCost, float maxSearchCost = 0, int maxSteps = 0, int cellGroupMask = -1, CanCrossCheckType canCrossCheckType = CanCrossCheckType.Default) {
             totalCost = 0;
             if (cellIndices == null) return 0;

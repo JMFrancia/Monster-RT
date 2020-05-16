@@ -56,10 +56,6 @@ namespace TGS {
 
 		}
 
-		void ResetTerrain() {
-			RandomizeTerrain(0);
-		}
-
 		void RandomizeTerrain(float strength) {
 			tgs.terrain.heightmapMaximumLOD = 0;	// always show maximum detail
 

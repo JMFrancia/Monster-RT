@@ -139,8 +139,26 @@ namespace TGS {
 		}
 
 
+		[SerializeField]
+		bool _useGeometryShaders = true;
 
-        [SerializeField]
+		/// <summary>
+		/// When enabled, geometry shaders will be used (if platform supports them)
+		/// </summary>
+		public bool useGeometryShaders {
+			get {
+				return _useGeometryShaders;
+			}
+			set {
+				if (_useGeometryShaders != value) {
+					_useGeometryShaders = value;
+					isDirty = true;
+				}
+			}
+		}
+
+
+		[SerializeField]
         int _sortingOrder;
 
         /// <summary>
@@ -712,7 +730,7 @@ namespace TGS {
 			}
 			set {
 				if (value != _cellRowCount) {
-					_cellRowCount = Mathf.Clamp (value, 2, 300);
+					_cellRowCount = Mathf.Clamp (value, 2, MAX_ROWS_OR_COLUMNS);
 					isDirty = true;
 					needGenerateMap = true;
 					CheckChanges ();
@@ -734,7 +752,7 @@ namespace TGS {
 			}
 			set {
 				if (value != _cellColumnCount) {
-					_cellColumnCount = Mathf.Clamp (value, 2, 300);
+					_cellColumnCount = Mathf.Clamp (value, 2, MAX_ROWS_OR_COLUMNS);
 					isDirty = true;
 					needGenerateMap = true;
 					CheckChanges ();
@@ -749,8 +767,8 @@ namespace TGS {
 		/// <param name="rows">Rows.</param>
 		/// <param name="columns">Columns.</param>
 		public void SetDimensions(int rows, int columns) {
-			_cellRowCount = Mathf.Clamp (rows, 2, 300);
-			_cellColumnCount = Mathf.Clamp (columns, 2, 300);
+			_cellRowCount = Mathf.Clamp (rows, 2, MAX_ROWS_OR_COLUMNS);
+			_cellColumnCount = Mathf.Clamp (columns, 2, MAX_ROWS_OR_COLUMNS);
 			isDirty = true;
 			needGenerateMap = true;
 		}

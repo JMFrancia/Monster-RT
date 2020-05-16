@@ -1,6 +1,6 @@
 ************************************
 *        TERRAIN GRID SYSTEM       *
-* (C) Copyright 2015-2019 Kronnect * 
+* (C) Copyright 2015-2020 Kronnect * 
 *            README FILE           *
 ************************************
 
@@ -43,6 +43,34 @@ Of course, all updates of Terrain Grid System will be eventually available on th
 
 Version history
 ---------------
+
+Version 10.5.3
+- API: CellSetTerritory(). Performance and memory optimization when transferring cells to other territories.
+- [Fix] Fixed an issue with some Voronoi cells not snapping correctly to grid corners when number of cells is two
+
+Version 10.5.2
+- Slight performance optimizations for box and hexagonal grids
+- [Fix] Clicking the "Can Cross" toggle in grid editor now affects the entire selection of cells
+
+Version 10.5.1
+- [Fix] Fixed recolor issue when cell surface has +65000 vertices
+
+Version 10.5
+- Added support for thick borders on Metal platform
+- Improved appearance of thick borders when using transparency
+- API: added CellGetNeighbour(index, side)
+- [Fix] Fixed crash then adding prefab to scene
+
+Version 10.4.3
+- API: added CellGetCanCross()
+- [Fix] Fixed territory center bug when territories are created by a color texture
+
+Version 10.4.2
+- Floating cells now can be highlighted when using TGS over a group of objects parented to an empty gameobject
+- [Fix] Fixed colored cells losing their colors when pointer exits their surface under certain conditions
+
+Version 10.4.1
+- [Fix] Fixed cell group mask issue with CellGetNeighbours API
 
 Version 10.4
 - Added "Sorting Order" option to control rendering order in transparent mode (No Background option set to true)

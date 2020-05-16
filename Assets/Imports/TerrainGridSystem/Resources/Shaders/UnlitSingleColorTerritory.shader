@@ -1,6 +1,7 @@
 ﻿Shader "Terrain Grid System/Unlit Single Color Territory Thin Line" {
  
 Properties {
+    _MainTex ("Texture", 2D) = "black" {}
     _Color ("Color", Color) = (1,1,1)
     _Offset ("Depth Offset", float) = -0.01    
     _NearClip ("Near Clip", Range(0, 1000.0)) = 25.0

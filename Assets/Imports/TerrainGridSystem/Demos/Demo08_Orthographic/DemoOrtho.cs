@@ -24,13 +24,18 @@ namespace TGS {
 			tgs.OnCellClick += (int cellIndex, int buttonIndex) => MergeCell (cellIndex);
 
             // Compute sprite scale
-            float tileSize = Vector3.Distance(tgs.CellGetVertexPosition(0, 0), tgs.CellGetVertexPosition(0, 3));
-            float spriteSize = Vector3.Distance(sprite.bounds.max, sprite.bounds.min);
-            float scale = tileSize / spriteSize;
-            for (int k=0;k<100;k++) {
-                GameObject o = Instantiate<GameObject>(sprite.gameObject);
-                o.transform.position = tgs.CellGetPosition(Random.Range(0, tgs.cellCount));
-                o.transform.localScale = new Vector3(scale, scale, 1f);
+            //float tileSize = Vector3.Distance(tgs.CellGetVertexPosition(0, 0), tgs.CellGetVertexPosition(0, 3));
+            //float spriteSize = Vector3.Distance(sprite.bounds.max, sprite.bounds.min);
+            //float scale = tileSize / spriteSize;
+            //for (int k=0;k<100;k++) {
+            //    GameObject o = Instantiate<GameObject>(sprite.gameObject);
+            //    o.transform.position = tgs.CellGetPosition(Random.Range(0, tgs.cellCount));
+            //    o.transform.localScale = new Vector3(scale, scale, 1f);
+            //}
+
+            for (int k=0;k<tgs.cellCount;k++) {
+                tgs.CellSetColor(k, Color.yellow);
+
             }
         }
 

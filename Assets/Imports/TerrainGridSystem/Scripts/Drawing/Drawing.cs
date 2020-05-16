@@ -10,7 +10,7 @@ namespace TGS {
 
 		static Rect dummyRect = new Rect ();
 
-		public static GameObject CreateSurface (string name, List<Vector3> surfPoints, int[] indices, Material material, int sortingOrder, DisposalManager disposalManager) {
+		public static Renderer CreateSurface (string name, List<Vector3> surfPoints, int[] indices, Material material, int sortingOrder, DisposalManager disposalManager) {
 			return CreateSurface (name, surfPoints, indices, material, dummyRect, Misc.Vector2one, Misc.Vector2zero, 0, false, sortingOrder, disposalManager);
 		}
 
@@ -29,7 +29,7 @@ namespace TGS {
 				sinTheta * (pointToRotate.x - centerPoint.x) + cosTheta * (pointToRotate.y - centerPoint.y) + centerPoint.y);
 		}
 
-		public static GameObject CreateSurface (string name, List<Vector3>surfPoints, int[] indices, Material material, Rect rect, Vector2 textureScale, Vector2 textureOffset, float textureRotation, bool rotateInLocalSpace, int sortingOrder, DisposalManager disposalManager) {
+		public static Renderer CreateSurface (string name, List<Vector3>surfPoints, int[] indices, Material material, Rect rect, Vector2 textureScale, Vector2 textureOffset, float textureRotation, bool rotateInLocalSpace, int sortingOrder, DisposalManager disposalManager) {
 			
 			GameObject hexa = new GameObject (name, typeof(MeshRenderer), typeof(MeshFilter));
 			disposalManager.MarkForDisposal (hexa);
@@ -75,7 +75,7 @@ namespace TGS {
             Renderer rr = hexa.GetComponent<Renderer>();
             rr.sortingOrder = sortingOrder;
 			rr.sharedMaterial = material;
-			return hexa;
+			return rr;
 			
 		}
 	}

@@ -1,6 +1,7 @@
 ﻿Shader "Terrain Grid System/Unlit Single Color Territory Geo" {
  
 Properties {
+    _MainTex ("Texture", 2D) = "black" {}
     _Color ("Color", Color) = (1,1,1,1)
     _Offset ("Depth Offset", float) = -0.01  
     _NearClip ("Near Clip", Range(0, 1000.0)) = 25.0
@@ -19,6 +20,11 @@ SubShader {
     Blend [_SrcBlend] [_DstBlend]
   	ZWrite [_ZWrite]
   	Cull Off
+    Stencil {
+        Ref 4
+        Comp NotEqual
+        Pass Replace
+    }
     Pass {
 	   	CGPROGRAM
 		#pragma vertex vert	
@@ -75,6 +81,9 @@ SubShader {
            float4 ab = p1 - p0;
            float4 normal = float4(-ab.y, ab.x, 0, 0);
            normal.xy = normalize(normal.xy) * _Thickness;
+
+           float aspect = _ScreenParams.x / _ScreenParams.y;
+           normal.y *= aspect;
 
            float4 tl = p0 - normal;
            float4 bl = p0 + normal;

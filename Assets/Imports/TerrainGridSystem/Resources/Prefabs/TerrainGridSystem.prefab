@@ -105,8 +105,11 @@ MonoBehaviour:
   _terrain: {fileID: 0}
   _terrainObject: {fileID: 0}
   _terrainObjectsPrefix: 
+  _terrainMeshPivot: {x: 0.5, y: 0.5}
   canvasTexture: {fileID: 0}
   _transparentBackground: 0
+  _useGeometryShaders: 1
+  _sortingOrder: 0
   _gridMask: {fileID: 0}
   _gridMaskUseScale: 0
   _gridTopology: 0
@@ -128,7 +131,6 @@ MonoBehaviour:
   _highlightEffect: 0
   _overlayMode: 1
   _gridCenter: {x: 0, y: 0}
-  _gridCenterWorldPosition: {x: 0, y: 0, z: 0}
   _gridScale: {x: 1, y: 1}
   _gridElevation: 0
   _gridElevationBase: 0
@@ -207,7 +209,7 @@ MonoBehaviour:
   _colorizedTerritoriesAlpha: 0.71
   _territoryHighlightColor: {r: 1, g: 0, b: 0, a: 0.7}
   _territoryHighlightColor2: {r: 0, g: 1, b: 0, a: 0.8}
-  _territoryFrontierColor: {r: 0, g: 1, b: 0, a: 1}
+  _territoryFrontierColor: {r: 0, g: 0, b: 0, a: 1}
   _territoryFrontiersThickness: 1
   _territoryDisputedFrontierColor: {r: 0, g: 1, b: 0, a: 1}
   _showTerritoriesOuterBorder: 1

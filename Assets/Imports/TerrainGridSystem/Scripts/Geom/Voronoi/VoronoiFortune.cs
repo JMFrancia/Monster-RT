@@ -207,21 +207,6 @@ namespace TGS.Geom {
 			}
 		}
 
-
-		bool isInSegment (Point pt, Point p1, Point p2) {
-			double dx = p2.x - p1.x;
-			double dy = p2.y - p1.y;
-			double t = ((pt.x - p1.x) * dx + (pt.y - p1.y) * dy) / (dx * dx + dy * dy);
-			if (t < 0 || t > 1)
-				return false;
-
-			double closestX = p1.x + t * dx;
-			double closestY = p1.y + t * dy;
-			dx = pt.x - closestX;
-			dy = pt.y - closestY;
-			return dx * dx + dy * dy < 1e-16;
-		}
-
 		void CheckCircleEvent (Arc i, double x0) {
 			// Invalidate any old event.
 			if (i.e != null && (i.e.x - x0 < Point.PRECISION || i.e.x - x0 > Point.PRECISION)) {
@@ -410,6 +395,13 @@ namespace TGS.Geom {
 				}
 			}
 
+			if (SnapToCorners()) {
+				SnapToCorners();
+			}
+
+		}
+
+        bool SnapToCorners() { 
 			// 2nd step - snap to nearest corners
 			Point[] corners = new Point[4];
 			corners [0] = new Point (X0, Y0);
@@ -417,18 +409,24 @@ namespace TGS.Geom {
 			corners [2] = new Point (X1, Y0);
 			corners [3] = new Point (X1, Y1);
 			Point np;
+			bool repeat = false;
 			for (int cornerIndex = 0; cornerIndex < corners.Length; cornerIndex++) {
 				Point corner = corners [cornerIndex];
 				// Get the nearest point of the segments
 				VoronoiCell nearestCell = GetNearestCellFrom (corner);
+				bool isolatedCorner = true;
 				// this territory is the nearest to the corner so now we can snap the nearest segment safely
 				if (GetNearestSegmentPointToCorner (corner, nearestCell.segments, true, out np)) {
+					isolatedCorner = false;
 					nearestCell.segments.Add (new Segment (np, corner, true));
 				}
 				if (GetNearestSegmentPointToCorner (corner, nearestCell.segments, false, out np)) {
+					isolatedCorner = false;
 					nearestCell.segments.Add (new Segment (np, corner, true));
 				}
+				if (isolatedCorner) repeat = true;
 			}
+			return repeat;
 		}
 
 		bool GetNearestSegmentPointToCorner (Point corner, List<Segment> segments, bool leftOrRightSides, out Point nearest) {
@@ -450,7 +448,7 @@ namespace TGS.Geom {
 						nearest = p;
 					}
 				}
-				p = segments [k].end;
+				p = s.end;
 				if (Point.EqualsBoth (p, corner))
 					continue;
 				if ((Math.Abs (corner.x - p.x) < Point.PRECISION && leftOrRightSides) || (Math.Abs (corner.y - p.y) < Point.PRECISION && !leftOrRightSides)) {

@@ -78,7 +78,9 @@ namespace TGS {
 		// Moves character to center of current cell
 		void SnapToCellCenter() {
 			Vector3 pos = tgs.SnapToCell(character.transform.position);
-			character.transform.position = pos + Vector3.up;
+			// Shift pos a bit upwards
+			pos -= tgs.transform.forward;
+			character.transform.position = pos;
 		}
 
 

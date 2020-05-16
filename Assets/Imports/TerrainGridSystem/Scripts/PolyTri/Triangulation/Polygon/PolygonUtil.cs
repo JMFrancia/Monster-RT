@@ -243,13 +243,13 @@ namespace TGS.Poly2Tri {
 
 			int numVerts = polygon.Count;
 			Point2D p0 = polygon [numVerts - 1];
-			bool bYFlag0 = (p0.Y >= p.Y) ? true : false;
+			bool bYFlag0 = (p0.Y >= p.Y) ;
 			Point2D p1 = null;
 
 			bool bInside = false;
 			for (int j = 0; j < numVerts; ++j) {
 				p1 = polygon [j];
-				bool bYFlag1 = (p1.Y >= p.Y) ? true : false;
+				bool bYFlag1 = (p1.Y >= p.Y);
 				if (bYFlag0 != bYFlag1) {
 					if (((p1.Y - p.Y) * (p0.X - p1.X) >= (p1.X - p.X) * (p0.Y - p1.Y)) == bYFlag1) {
 						bInside = !bInside;
@@ -407,12 +407,12 @@ namespace TGS.Poly2Tri {
 			// dealing with x and z here. And in our case, z axis goes
 			// downward while the x axis goes rightward.
 			//bool bLastVertexIsToRight = TriangulationUtil.PointRelativeToLine2D(poly[lastVertex], edgeBegin, edgeEnd) >= 0;
-			bool bLastVertexIsToRight = TriangulationUtil.Orient2d (edgeBegin, edgeEnd, poly [lastVertex]) == Orientation.CW ? true : false;
+			bool bLastVertexIsToRight = TriangulationUtil.Orient2d (edgeBegin, edgeEnd, poly [lastVertex]) == Orientation.CW;
 			Point2D tempRay = new Point2D (0.0, 0.0);
 
 			for (int curVertex = 0; curVertex < poly.Count; curVertex++) {
 				//bool bCurVertexIsToRight = TriangulationUtil.PointRelativeToLine2D(poly[curVertex], edgeBegin, edgeEnd) >= 0;
-				bool bCurVertexIsToRight = TriangulationUtil.Orient2d (edgeBegin, edgeEnd, poly [curVertex]) == Orientation.CW ? true : false;
+				bool bCurVertexIsToRight = TriangulationUtil.Orient2d (edgeBegin, edgeEnd, poly [curVertex]) == Orientation.CW;
 				if (bCurVertexIsToRight) {
 					if (bLastVertexIsToRight) {
 						outPoly.Add (poly [curVertex]);
@@ -462,7 +462,7 @@ namespace TGS.Poly2Tri {
 			}
 		}
 
-
+        /// <summary>
 		/// Merges two polygons, given that they intersect.
 		/// </summary>
 		/// <param name="polygon1">The first polygon.</param>
@@ -519,7 +519,7 @@ namespace TGS.Poly2Tri {
 							bPointInPolygonAngle = ctx.PointInPolygonAngle (comparePoint, currentPoly);
 							currentPolyVectorAngles [comparePointIndex] = bPointInPolygonAngle ? 1 : 0;
 						} else {
-							bPointInPolygonAngle = (currentPolyVectorAngles [comparePointIndex] == 1) ? true : false;
+							bPointInPolygonAngle = (currentPolyVectorAngles [comparePointIndex] == 1);
 						}
 
 						if (!bPointInPolygonAngle) {
@@ -633,7 +633,7 @@ namespace TGS.Poly2Tri {
 							bPointInPolygonAngle = ctx.PointInPolygonAngle (comparePoint, currentPoly);
 							currentPolyVectorAngles [comparePointIndex] = bPointInPolygonAngle ? 1 : 0;
 						} else {
-							bPointInPolygonAngle = (currentPolyVectorAngles [comparePointIndex] == 1) ? true : false;
+							bPointInPolygonAngle = (currentPolyVectorAngles [comparePointIndex] == 1);
 						}
 
 						if (bPointInPolygonAngle) {
@@ -744,7 +744,7 @@ namespace TGS.Poly2Tri {
 								bPointInPolygonAngle = ctx.PointInPolygonAngle (compareVertex, currentPoly);
 								currentPolyVectorAngles [compareIndex] = bPointInPolygonAngle ? 1 : 0;
 							} else {
-								bPointInPolygonAngle = (currentPolyVectorAngles [compareIndex] == 1) ? true : false;
+								bPointInPolygonAngle = (currentPolyVectorAngles [compareIndex] == 1);
 							}
 
 							if (bPointInPolygonAngle) {
@@ -778,7 +778,7 @@ namespace TGS.Poly2Tri {
 								bPointInPolygonAngle = ctx.PointInPolygonAngle (compareVertex, currentPoly);
 								currentPolyVectorAngles [compareIndex] = bPointInPolygonAngle ? 1 : 0;
 							} else {
-								bPointInPolygonAngle = (currentPolyVectorAngles [compareIndex] == 1) ? true : false;
+								bPointInPolygonAngle = (currentPolyVectorAngles [compareIndex] == 1);
 							}
 
 							if (!bPointInPolygonAngle) {
@@ -831,7 +831,6 @@ namespace TGS.Poly2Tri {
 		/// </summary>
 		/// <param name="polygon1">The first polygon.</param>
 		/// <param name="polygon2">The second polygon</param>
-		/// <param name="subtract">The result of the polygon subtraction</param>
 		/// <returns>error code</returns>
 		public static PolygonUtil.PolyUnionError PolygonOperation (PolygonUtil.PolyOperation operations, Point2DList polygon1, Point2DList polygon2, out Dictionary<uint, Point2DList> results) {
 			PolygonOperationContext ctx = new PolygonOperationContext ();
@@ -1181,7 +1180,7 @@ namespace TGS.Poly2Tri {
          * (in other words, is A "righter" than B)
          */
 		private List<SplitComplexPolygonNode> mConnected = new List<SplitComplexPolygonNode> ();
-		private Point2D mPosition = null;
+		private Point2D mPosition;
 
 		public int NumConnected { get { return mConnected.Count; } }
 
@@ -1274,15 +1273,6 @@ namespace TGS.Poly2Tri {
 			}
 		}
 
-		//Fix for obnoxious behavior for the % operator for negative numbers...
-		private int remainder (int x, int modulus) {
-			int rem = x % modulus;
-			while (rem < 0) {
-				rem += modulus;
-			}
-			return rem;
-		}
-
 		public void AddConnection (SplitComplexPolygonNode toMe) {
 			// Ignore duplicate additions
 			if (!mConnected.Contains (toMe) && toMe != this) {
@@ -1294,20 +1284,10 @@ namespace TGS.Poly2Tri {
 			mConnected.Remove (fromMe);
 		}
 
-		private void RemoveConnectionByIndex (int index) {
-			if (index < 0 || index >= mConnected.Count) {
-				return;
-			}
-			mConnected.RemoveAt (index);
-		}
-
 		public void ClearConnections () {
 			mConnected.Clear ();
 		}
 
-		private bool IsConnectedTo (SplitComplexPolygonNode me) {
-			return mConnected.Contains (me);
-		}
 
 		public SplitComplexPolygonNode GetRightestConnection (SplitComplexPolygonNode incoming) {
 			if (NumConnected == 0) {

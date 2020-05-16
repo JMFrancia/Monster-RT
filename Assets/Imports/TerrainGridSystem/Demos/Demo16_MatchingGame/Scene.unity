@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465934, g: 0.49642956, b: 0.5748249, a: 1}
 --- !u!157 &4
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -166,8 +166,11 @@ MonoBehaviour:
   _terrain: {fileID: 0}
   _terrainObject: {fileID: 0}
   _terrainObjectsPrefix: 
+  _terrainMeshPivot: {x: 0.5, y: 0.5}
   canvasTexture: {fileID: 0}
   _transparentBackground: 0
+  _useGeometryShaders: 1
+  _sortingOrder: 0
   _gridMask: {fileID: 0}
   _gridMaskUseScale: 0
   _gridTopology: 1
@@ -189,7 +192,6 @@ MonoBehaviour:
   _highlightEffect: 0
   _overlayMode: 1
   _gridCenter: {x: 0, y: 0}
-  _gridCenterWorldPosition: {x: 0, y: 0, z: 0}
   _gridScale: {x: 1, y: 1}
   _gridElevation: 0
   _gridElevationBase: 0
@@ -448,7 +450,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2109026411}
   - component: {fileID: 2109026410}
-  - component: {fileID: 2109026409}
   - component: {fileID: 2109026408}
   - component: {fileID: 2109026407}
   m_Layer: 0
@@ -466,13 +467,6 @@ AudioListener:
   m_GameObject: {fileID: 2109026406}
   m_Enabled: 1
 --- !u!124 &2109026408
-Behaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2109026406}
-  m_Enabled: 1
---- !u!92 &2109026409
 Behaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}

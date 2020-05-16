@@ -15,7 +15,8 @@ namespace TGS {
 		public IAdmin entity;
 		public Rect rect2D;
 		public float rect2DArea;
-		public GameObject surfaceGameObject;
+		public Renderer renderer;
+        public GameObject surfaceGameObject { get { return renderer != null ? renderer.gameObject : null; } }
 
 		public Material customMaterial { get; set; }
 
@@ -27,6 +28,11 @@ namespace TGS {
 		public ContainsFunction Contains;
 
 		public bool isBox;
+
+        /// <summary>
+        /// If the gameobject contains one or more children surfaces with name splitSurface due to having +65000 vertices
+        /// </summary>
+		public List<Renderer> childrenSurfaces;
 
 		public Region (IAdmin entity, bool isBox) {
 			this.entity = entity;
@@ -56,6 +62,14 @@ namespace TGS {
 				GameObject.DestroyImmediate (surfaceGameObject);
 			}
 			customMaterial = null;
+			childrenSurfaces = null;
+		}
+
+        public void DestroySurface() {
+            if (renderer != null) {
+				GameObject.DestroyImmediate(renderer.gameObject);
+				renderer = null;
+            }
 		}
 
 		public Region Clone () {

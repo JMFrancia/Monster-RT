@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465934, g: 0.49642956, b: 0.5748249, a: 1}
 --- !u!157 &4
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -166,8 +166,11 @@ MonoBehaviour:
   _terrain: {fileID: 0}
   _terrainObject: {fileID: 0}
   _terrainObjectsPrefix: 
+  _terrainMeshPivot: {x: 0.5, y: 0.5}
   canvasTexture: {fileID: 0}
   _transparentBackground: 0
+  _useGeometryShaders: 1
+  _sortingOrder: 0
   _gridMask: {fileID: 0}
   _gridMaskUseScale: 0
   _gridTopology: 0
@@ -189,7 +192,6 @@ MonoBehaviour:
   _highlightEffect: 0
   _overlayMode: 1
   _gridCenter: {x: 0, y: 0}
-  _gridCenterWorldPosition: {x: 0, y: 0, z: 0}
   _gridScale: {x: 1, y: 1}
   _gridElevation: 0
   _gridElevationBase: 0
@@ -245,7 +247,7 @@ MonoBehaviour:
   _showCells: 1
   _cellSize: {x: 62.5, y: 62.500015}
   _cellBorderColor: {r: 0.48659173, g: 0.49043074, b: 0.5294118, a: 1}
-  _cellBorderThickness: 1
+  _cellBorderThickness: 1.61
   _cellHighlightColor: {r: 0, g: 0, b: 1, a: 0.7}
   _cellHighlightColor2: {r: 0, g: 1, b: 0, a: 0.8}
   _cellHighlightNonVisible: 1
@@ -269,7 +271,7 @@ MonoBehaviour:
   _territoryHighlightColor: {r: 1, g: 0, b: 0, a: 0.7}
   _territoryHighlightColor2: {r: 0, g: 1, b: 0, a: 0.8}
   _territoryFrontierColor: {r: 0, g: 0, b: 0, a: 1}
-  _territoryFrontiersThickness: 1
+  _territoryFrontiersThickness: 3.35
   _territoryDisputedFrontierColor: {r: 0, g: 0, b: 0, a: 1}
   _showTerritoriesOuterBorder: 1
   _allowTerritoriesInsideTerritories: 0
@@ -325,7 +327,6 @@ GameObject:
   m_Component:
   - component: {fileID: 367317007}
   - component: {fileID: 367317006}
-  - component: {fileID: 367317005}
   - component: {fileID: 367317004}
   - component: {fileID: 367317003}
   m_Layer: 0
@@ -343,13 +344,6 @@ AudioListener:
   m_GameObject: {fileID: 367317002}
   m_Enabled: 1
 --- !u!124 &367317004
-Behaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 367317002}
-  m_Enabled: 1
---- !u!92 &367317005
 Behaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -405,14 +399,14 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &422516649
+--- !u!1 &1350899511
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 422516650}
+  - component: {fileID: 1350899512}
   m_Layer: 5
   m_Name: Surfaces
   m_TagString: Untagged
@@ -420,12 +414,12 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &422516650
+--- !u!4 &1350899512
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 422516649}
+  m_GameObject: {fileID: 1350899511}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -508,7 +502,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 500, y: 500, z: 1}
   m_Children:
-  - {fileID: 422516650}
+  - {fileID: 1350899512}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -539,7 +533,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f22a1a7418e2442dbd193da3bd5322b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tex: {fileID: 0}
 --- !u!4 &2060260325
 Transform:
   m_ObjectHideFlags: 0

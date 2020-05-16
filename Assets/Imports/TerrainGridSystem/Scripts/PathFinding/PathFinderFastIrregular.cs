@@ -8,25 +8,25 @@ namespace TGS.PathFinding {
 	public class PathFinderFastIrregular : IPathFinder {
 
 		// Heap variables are initializated to default, but I like to do it anyway
-		private Cell[] mGrid = null;
-		private PriorityQueueB<int> mOpen = null;
+		private Cell[] mGrid;
+		private PriorityQueueB<int> mOpen;
 		private List<PathFinderNode> mClose = new List<PathFinderNode> ();
 		private HeuristicFormula mFormula = HeuristicFormula.Manhattan;
 		private float mHEstimate = 1;
 		private int mMaxSteps = 2000;
 		private float mMaxSearchCost = 100000;
-		private PathFinderNodeFast[] mCalcGrid = null;
+		private PathFinderNodeFast[] mCalcGrid;
 		private byte mOpenNodeValue = 1;
 		private byte mCloseNodeValue = 2;
-		private OnCellCross mOnCellCross = null;
+		private OnCellCross mOnCellCross;
 
 		//Promoted local variables to member variables to avoid recreation between calls
-		private float mH = 0;
-		private int mLocation = 0;
-		private int mNewLocation = 0;
-		private bool mFound = false;
-		private int mEndLocation = 0;
-		private float mNewG = 0;
+		private float mH;
+		private int mLocation;
+		private int mNewLocation;
+		private bool mFound;
+		private int mEndLocation;
+		private float mNewG;
 		private int mCellGroupMask = -1;
 		private bool mIgnoreCanCrossCheck;
 

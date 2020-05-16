@@ -355,7 +355,6 @@ GameObject:
   m_Component:
   - component: {fileID: 889972434}
   - component: {fileID: 889972433}
-  - component: {fileID: 889972432}
   - component: {fileID: 889972431}
   - component: {fileID: 889972430}
   m_Layer: 0
@@ -373,13 +372,6 @@ AudioListener:
   m_GameObject: {fileID: 889972429}
   m_Enabled: 1
 --- !u!124 &889972431
-Behaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 889972429}
-  m_Enabled: 1
---- !u!92 &889972432
 Behaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -488,8 +480,11 @@ MonoBehaviour:
   _terrain: {fileID: 0}
   _terrainObject: {fileID: 0}
   _terrainObjectsPrefix: 
+  _terrainMeshPivot: {x: 0.5, y: 0.5}
   canvasTexture: {fileID: 0}
   _transparentBackground: 0
+  _useGeometryShaders: 1
+  _sortingOrder: 0
   _gridMask: {fileID: 0}
   _gridMaskUseScale: 0
   _gridTopology: 3
@@ -511,7 +506,6 @@ MonoBehaviour:
   _highlightEffect: 0
   _overlayMode: 1
   _gridCenter: {x: 0, y: 0}
-  _gridCenterWorldPosition: {x: 0, y: 0, z: 0}
   _gridScale: {x: 1, y: 1}
   _gridElevation: 0
   _gridElevationBase: 0

@@ -12,7 +12,9 @@ namespace TGS
 		public void Init<T> (TerrainGridSystem tgs) where T: Component
 		{
 			this.tgs = tgs;
-			hits = new RaycastHit[20];
+			if (hits == null || hits.Length != 20) {
+				hits = new RaycastHit[20];
+			}
 			if (GetComponent<T> () == null) {
 				gameObject.AddComponent<T> ();
 			}

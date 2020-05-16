@@ -10,7 +10,12 @@ namespace TGS.Geom {
 
 		public Polygon () {
 			contours = new List<Contour> ();
-			bounds = null;
+		}
+
+        public Polygon(Point[] points) {
+			Contour contour = new Contour(points);
+			contours = new List<Contour>();
+			contours.Add(contour);
 		}
 
 		public void Clear () {
